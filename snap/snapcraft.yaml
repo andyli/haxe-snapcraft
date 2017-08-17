@@ -1,0 +1,65 @@
+name: haxe
+version: '3.4.2'
+summary: multi-target universal programming language
+description: |
+  Haxe is an open source toolkit based on a modern, high level,
+  strictly typed programming language, a cross-compiler, a complete
+  cross-platform standard library and ways to access each platform's
+  native capabilities.
+icon: snap/haxe-logo-glyph.svg
+
+grade: devel
+confinement: strict
+
+apps:
+  haxe:
+    command: haxe
+    plugs: [home, network, network-bind]
+  haxelib:
+    command: haxelib
+    plugs: [home, network]
+  neko:
+    command: neko
+    plugs: [home, network, network-bind]
+
+environment:
+  NEKOPATH: $SNAP/lib/neko
+  HAXE_STD_PATH: $SNAP/std
+  PATH: $SNAP:$SNAP/bin:$PATH
+
+parts:
+  neko:
+    source: https://github.com/HaxeFoundation/neko.git
+    source-type: git
+    source-tag: v2-1-0
+    source-depth: 1
+    plugin: cmake
+    build-packages:
+      - libgc-dev
+      - libssl-dev
+      - libpcre3-dev
+      - zlib1g-dev
+      - apache2-dev
+      - libmysqlclient-dev
+      - libsqlite3-dev
+      - libmbedtls-dev
+      - libgtk2.0-dev
+  haxe:
+    source: https://github.com/HaxeFoundation/haxe.git
+    source-type: git
+    source-tag: 3.4.2
+    source-depth: 1
+    plugin: make
+    disable-parallel: true
+    artifacts:
+      - haxe
+      - haxelib
+      - std
+    after: [neko]
+    build-packages:
+      - ocaml
+      - ocaml-native-compilers
+      - ocaml-findlib
+      - camlp4
+      - libpcre3-dev
+      - zlib1g-dev
